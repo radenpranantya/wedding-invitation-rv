@@ -20,3 +20,11 @@ export interface Wish {
   message: string;
   created_at?: string;
 }
+
+export interface Photo {
+  id: string;
+  url: string;
+  alt: string;
+  display_order: number;
+  created_at?: string;
+}

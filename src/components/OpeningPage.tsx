@@ -8,10 +8,16 @@ interface OpeningPageProps {
 
 export default function OpeningPage({ guestName, onOpenInvitation }: OpeningPageProps) {
   const formatGuestName = (name: string) => {
-    return name
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' & ');
+    const parts = name.split('-');
+
+    const formatWord = (word: string) => {
+      return word.replace(/([A-Z])/g, ' $1').trim()
+        .split(' ')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    };
+
+    return parts.map(formatWord).join(' & ');
   };
 
   return (

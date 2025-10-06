@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Music, Pause, Play } from 'lucide-react';
 
-export default function MusicPlayer() {
+interface MusicPlayerProps {
+  autoplay?: boolean;
+}
+
+export default function MusicPlayer({ autoplay = false }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -10,22 +14,68 @@ export default function MusicPlayer() {
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
 
+    if (autoplay) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((error) => {
+        console.log('Autoplay prevented:', error);
+      });
+    }
+
+    const handleVisibilityChange = () => {
+      if (audioRef.current) {
+        if (document.hidden) {
+          if (isPlaying) {
+            audioRef.current.pause();
+          }
+        } else {
+          if (isPlaying) {
+            audioRef.current.play();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [autoplay]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (audioRef.current) {
+        if (document.hidden) {
+          audioRef.current.pause();
+        } else {
+          if (isPlaying) {
+            audioRef.current.play();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying]);
 
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
         audioRef.current.play();
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 

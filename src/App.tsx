@@ -9,6 +9,7 @@ import RSVPSection from './components/RSVPSection';
 import MusicPlayer from './components/MusicPlayer';
 import VenueMap from './components/VenueMap';
 import WeddingGift from './components/WeddingGift';
+import LiveStreaming from './components/LiveStreaming';
 
 function App() {
   const location = useLocation();
@@ -20,7 +21,14 @@ function App() {
     return path || 'guest';
   };
 
+  const shouldShowVenue = () => {
+    const path = location.pathname.slice(1);
+    const parts = path.split('-');
+    return parts.length <= 2;
+  };
+
   const guestName = getGuestNameFromUrl();
+  const showVenue = shouldShowVenue();
 
   if (!isInvitationOpened) {
     return <OpeningPage guestName={guestName} onOpenInvitation={() => setIsInvitationOpened(true)} />;
@@ -28,7 +36,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-cyan-50">
-      <MusicPlayer />
+      <MusicPlayer autoplay={true} />
 
       <HeroSlider weddingDate={weddingDate} />
 
@@ -196,6 +204,8 @@ function App() {
           </div>
         </div>
       </motion.section>
+
+      <LiveStreaming showVenue={showVenue} />
 
       <VenueMap />
 
